@@ -1,82 +1,51 @@
-# Context7 MCP Server
+# Dokumentasjons-MCP-er (Context7) for frontend i Claude Code
 
-## Hva er Context7?
+Denne kategorien er reell og nyttig, og den er ortogonal til nettleser-/verifiseringsløkken (`--chrome`). Context7 løser «skriver Claude mot riktig API og versjon», mens browser-løkken løser «funker resultatet faktisk». De to sammen er en sterk kombinasjon: Context7 inn, verifisering ut.
 
-Context7 er for tiden den mest brukte MCP-serveren (Model Context Protocol). Den er rangert som **#1 på MCP.Directory** og ble plassert i **ThoughtWorks Technology Radar** sin *Trial*-ring i november 2025.
+## Om Context7 spesifikt
+
+Det er den mest brukte MCP-serveren akkurat nå — rangert som #1 på MCP.Directory og plassert i ThoughtWorks' Technology Radar «Trial»-ring (november 2025).
 
 Mekanikken er todelt:
 
-1. Resolver et biblioteknavn til en Context7-ID.
-2. Henter versjonsspesifikk dokumentasjon og kodeeksempler for akkurat det biblioteket og den versjonen.
+1. **Resolve** — du resolver først et bibliotek-navn til en Context7-ID.
+2. **Query** — så henter du versjonsspesifikk dokumentasjon og kodeeksempler for akkurat det biblioteket og den versjonen.
 
-Å hoppe over *resolve*-steget er den vanligste feilen i agent-traces. Context7 anbefaler også at verktøyet ikke kalles mer enn tre ganger per spørsmål.
+Å hoppe over resolve-steget er den vanligste feilen i agent-traces. Serveren ber selv om at verktøyet ikke kalles mer enn 3 ganger per spørsmål.
 
-Context7 dekker store deler av frontend-økosystemet, blant annet:
-
-* Next.js
-* React
-* Tailwind CSS
-* shadcn/ui
-* React Query
-* Andre populære frontend-biblioteker
-
-Dette er spesielt nyttig på områder hvor LLM-treningsdata blir utdaterte raskt.
-
----
+Den dekker det meste av frontend-stacken (Next.js, React, Tailwind, shadcn/ui, React Query osv.) — nettopp der treningsdata blir utdatert raskest.
 
 ## Oppsett i Claude Code
 
-Det finnes to hovedmåter å installere Context7 på.
+To veier:
 
-### Alternativ 1: Automatisk installasjon
-
-Den enkleste metoden er å bruke Context7 sin egen installer:
+**Enkel (installer):**
 
 ```bash
 npx ctx7 setup --claude
 ```
 
-Denne løsningen:
+Autentiserer via OAuth, genererer en API-nøkkel og installerer enten CLI+Skills-varianten eller MCP-varianten.
 
-* Autentiserer via OAuth
-* Genererer API-nøkkel
-* Installerer enten:
+**Manuell (remote-endepunkt):**
 
-  * CLI + Skills-varianten
-  * MCP-varianten
+- URL: `https://mcp.context7.com/mcp`
+- API-nøkkel sendes via `CONTEXT7_API_KEY`-header
+- Alternativt stdio lokalt: `npx @upstash/context7-mcp`
 
-### Alternativ 2: Manuell installasjon
+API-nøkkel er valgfritt — gratisnivået fungerer uten, men nøkkel gir høyere rate limits. Merk at gratisnivået ble kuttet med 83–92 % i januar 2026, så for jevnlig bruk vil du sannsynligvis trenge en nøkkel.
 
-Legg til MCP-endepunktet direkte:
+## Sikkerhet (viktig i enterprise-kontekst)
 
-```text
-https://mcp.context7.com/mcp
-```
+Disse serverne injiserer ekstern tekst rett inn i Claudes kontekst — det er en tillitsflate.
 
-API-nøkkelen sendes via:
+- En context-poisoning-sårbarhet kalt **ContextCrush** ble oppdaget og patchet i februar 2026.
+- Den sentraliserte registermodellen anbefales avbøtet med **utgående nettverksfiltrering** (Stackloks ToolHive-guide).
 
-```text
-CONTEXT7_API_KEY
-```
+For en personlig frontend-maskin er dette lavrisiko. Men ved en bredere utrulling i Computas er det et punkt for sikkerhetsgjennomgang — samme prompt-injection-resonnement som gjelder for CTI-MCP-en gjelder her.
 
-Alternativt kan Context7 kjøres lokalt via stdio:
+## Praktisk anbefaling
 
-```bash
-npx @upstash/context7-mcp
-```
+Ta den inn, men hold den **behovsstyrt** (trigg med «use context7» i prompten) heller enn alltid-på. Den koster et nettverkskall og kontekst hver gang, så for stabile, velkjente biblioteker er den unødvendig.
 
----
-
-## API-nøkler og rate limits
-
-API-nøkkel er valgfritt.
-
-Gratisnivået fungerer uten nøkkel, men en API-nøkkel gir høyere rate limits.
-
-> Merk: Gratisnivået ble redusert med omtrent 83–92 % i januar 2026. For jevnlig bruk vil det derfor sannsynligvis være nødvendig med API-nøkkel.
-
----
-
-## Sikkerhetsvurderinger
-
-Context7 og lignende MCP-servere
+Verdien kommer på de raskt bevegende greiene — React 19, Tailwind v4, nyeste Next.js — der modellen ellers fyller inn fra hukommelsen og bommer på versjonen.
