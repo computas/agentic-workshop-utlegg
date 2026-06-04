@@ -1,7 +1,5 @@
 # Dokumentasjons-MCP-er (Context7) for frontend i Claude Code
 
-Denne kategorien er reell og nyttig, og den er ortogonal til nettleser-/verifiseringsløkken (`--chrome`). Context7 løser «skriver Claude mot riktig API og versjon», mens browser-løkken løser «funker resultatet faktisk». De to sammen er en sterk kombinasjon: Context7 inn, verifisering ut.
-
 ## Om Context7 spesifikt
 
 Det er den mest brukte MCP-serveren akkurat nå — rangert som #1 på MCP.Directory og plassert i ThoughtWorks' Technology Radar «Trial»-ring (november 2025).
