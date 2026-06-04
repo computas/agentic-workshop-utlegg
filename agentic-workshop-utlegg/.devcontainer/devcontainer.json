@@ -1,0 +1,19 @@
+{
+  "name": "Agentisk workshop – utlegg",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "postCreateCommand": "npm install && npm install -g @anthropic-ai/claude-code",
+  "forwardPorts": [5173, 3001],
+  "portsAttributes": {
+    "5173": { "label": "web (Vite)", "onAutoForward": "openPreview" },
+    "3001": { "label": "api (Express)" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "vitest.explorer"
+      ]
+    }
+  }
+}
