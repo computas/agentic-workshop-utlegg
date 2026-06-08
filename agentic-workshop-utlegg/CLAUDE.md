@@ -42,7 +42,7 @@ registrere og behandle utlegg. Les dette før du implementerer noe.
 Nye features skal se ut og oppføre seg som dette.
 
 ## Hvordan vi bygger en feature
-Bruk skillet `feature-slice` (`.claude/skills/feature-slice/`). Etter
+Bruk skillen `feature-slice`. Etter
 implementasjon: kjør subagentene `code-reviewer` og `acceptance-checker`.
 
 ## Definisjon av ferdig
